@@ -2,7 +2,7 @@ AC_INIT(Milk Chocolate Doom, 1.0.0)
 
 PACKAGE_SHORTNAME=${PACKAGE_NAME% Doom}
 PACKAGE_SHORTDESC="Conservative source port"
-PACKAGE_COPYRIGHT="Copyright (C) 1993-2023"
+PACKAGE_COPYRIGHT="Copyright (C) 1993-2024"
 PACKAGE_LICENSE="GNU General Public License, version 2"
 PACKAGE_MAINTAINER="williamist"
 PACKAGE_URL="https://github.com/williamistGitHub/milk-chocolate-doom"
@@ -30,7 +30,20 @@ then
         CFLAGS="-O$OPT_LEVEL -g $WARNINGS $orig_CFLAGS"
 fi
 
-PKG_CHECK_MODULES(SDL, [sdl2 >= 2.0.7])
+AC_CANONICAL_TARGET
+TARGET_OS=""
+AS_CASE([$target_cpu],
+        [x86_64|aarch64*],
+        [
+            TARGET_OS="64"
+        ],
+        [i?86|arm*],
+        [
+            TARGET_OS="32"
+        ])
+AC_SUBST([TARGET_OS])
+
+PKG_CHECK_MODULES(SDL, [sdl2 >= 2.0.14])
 # Check for SDL2_mixer
 AC_ARG_ENABLE([sdl2mixer],
 AS_HELP_STRING([--disable-sdl2mixer], [Disable SDL2_mixer support])

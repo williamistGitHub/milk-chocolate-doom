@@ -117,10 +117,7 @@ boolean advancedemo;
 boolean storedemo;
 
 // If true, the main game loop has started.
-boolean main_loop_started = false;
-
-char wadfile[1024]; // primary wad file
-char mapdir[1024];  // directory of development maps
+boolean         main_loop_started = false;
 
 int show_endoom = 1;
 int show_diskicon = 1;
@@ -967,7 +964,7 @@ void PrintDehackedBanners(void)
     }
 }
 
-static struct
+static const struct
 {
     const char *description;
     const char *cmdline;
@@ -1229,7 +1226,7 @@ static void LoadIwadDeh(void)
                     "The dehacked file is required in order to emulate\n"
                     "chex.exe correctly.  It can be found in your nearest\n"
                     "/idgames repository mirror at:\n\n"
-                    "   utils/exe_edit/patches/chexdeh.zip");
+                    "   themes/chex/chexdeh.zip");
         }
 
         if (!DEH_LoadFile(chex_deh))
@@ -1288,7 +1285,6 @@ void D_DoomMain(void)
     int p;
     char file[256];
     char demolumpname[9];
-    int numiwadlumps;
 
     I_AtExit(D_Endoom, false);
 
@@ -1498,7 +1494,6 @@ void D_DoomMain(void)
 
     DEH_printf("W_Init: Init WADfiles.\n");
     D_AddFile(iwadfile);
-    numiwadlumps = numlumps;
 
     W_CheckCorrectIWAD(doom);
 
@@ -1700,6 +1695,12 @@ void D_DoomMain(void)
     if (M_ParmExists("-dehlump"))
     {
         int i, loaded = 0;
+        int numiwadlumps = numlumps;
+
+        while (!W_IsIWADLump(lumpinfo[numiwadlumps - 1]))
+        {
+            numiwadlumps--;
+        }
 
         for (i = numiwadlumps; i < numlumps; ++i)
         {
@@ -1756,7 +1757,7 @@ void D_DoomMain(void)
     I_CheckIsScreensaver();
     I_InitTimer();
     I_InitJoystick();
-    I_InitSound(true);
+    I_InitSound(doom);
     I_InitMusic();
 
     printf("NET_Init: Init network subsystem.\n");
