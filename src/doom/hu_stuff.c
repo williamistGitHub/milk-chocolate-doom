@@ -35,6 +35,7 @@
 #include "m_misc.h"
 #include "m_menu.h"
 #include "w_wad.h"
+#include "d_console.h"
 
 #include "s_sound.h"
 
@@ -83,6 +84,9 @@ static hu_itext_t	w_chat;
 static boolean		always_off = false;
 static char		chat_dest[MAXPLAYERS];
 static hu_itext_t w_inputbuffer[MAXPLAYERS];
+
+boolean cmd_on;
+static hu_itext_t w_cmd;
 
 static boolean		message_on;
 boolean			message_dontfuckwithme;
@@ -370,6 +374,8 @@ void HU_Start(void)
     message_nottobefuckedwith = false;
     chat_on = false;
 
+    cmd_on = false;
+
     // create the message widget
     HUlib_initSText(&w_message,
 		    HU_MSGX, HU_MSGY, HU_MSGHEIGHT,
@@ -428,18 +434,21 @@ void HU_Start(void)
     for (i=0 ; i<MAXPLAYERS ; i++)
 	HUlib_initIText(&w_inputbuffer[i], 0, 0, 0, 0, &always_off);
 
+    HUlib_initIText(&w_cmd, 0, 0, hu_font, HU_FONTSTART, &cmd_on);
+
     headsupactive = true;
 
 }
 
 void HU_Drawer(void)
 {
-
-    HUlib_drawSText(&w_message);
+    if (!cmd_on)
+        HUlib_drawSText(&w_message);
     HUlib_drawIText(&w_chat);
     if (automapactive)
 	HUlib_drawTextLine(&w_title, false);
 
+    HUlib_drawIText(&w_cmd);
 }
 
 void HU_Erase(void)
@@ -448,6 +457,7 @@ void HU_Erase(void)
     HUlib_eraseSText(&w_message);
     HUlib_eraseIText(&w_chat);
     HUlib_eraseTextLine(&w_title);
+    HUlib_eraseIText(&w_cmd);
 
 }
 
@@ -576,6 +586,21 @@ static void StopChatInput(void)
     I_StopTextInput();
 }
 
+static void StartCmdInput()
+{
+    cmd_on = true;
+    HUlib_resetIText(&w_cmd);
+    HUlib_addPrefixToIText(&w_cmd, "CMD: ");
+
+    I_StartTextInput(0, 16, SCREENWIDTH, 16 + 8);
+}
+
+static void StopCmdInput()
+{
+    cmd_on = false;
+    I_StopTextInput();
+}
+
 boolean HU_Responder(event_t *ev)
 {
 
@@ -606,9 +631,37 @@ boolean HU_Responder(event_t *ev)
     if (ev->type != ev_keydown)
 	return false;
 
-    if (!chat_on)
+    if (cmd_on)
     {
-	if (ev->data1 == key_message_refresh)
+        if (ev->data3 == KEY_ESCAPE)
+        {
+            StopCmdInput();
+            return true;
+        }
+
+        if (ev->data3 == KEY_ENTER)
+        {
+            if (w_cmd.l.len - w_cmd.lm)
+            {
+                D_ExecuteCmd(w_cmd.l.l + w_cmd.lm);
+            }
+            StopCmdInput();
+            return true;
+        }
+
+        eatkey = HUlib_keyInIText(&w_cmd, ev->data3);
+
+        return eatkey;
+    }
+
+    if (!chat_on && !cmd_on)
+    {
+    if (ev->data1 == key_open_cmd)
+    {
+        StartCmdInput();
+        eatkey = true;
+    }
+	else if (ev->data1 == key_message_refresh)
 	{
 	    message_on = true;
 	    message_counter = HU_MSGTIMEOUT;

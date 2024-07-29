@@ -128,6 +128,7 @@ int key_message_refresh = KEY_ENTER;
 int key_pause = KEY_PAUSE;
 int key_demo_quit = 'q';
 int key_spy = KEY_F12;
+int key_open_cmd = '`';
 
 // Multiplayer chat keys:
 
@@ -266,6 +267,8 @@ void M_BindBaseControls(void)
     M_BindIntVariable("dclick_use",          &dclick_use);
     M_BindIntVariable("key_pause",           &key_pause);
     M_BindIntVariable("key_message_refresh", &key_message_refresh);
+
+    M_BindIntVariable("key_open_cmd", &key_open_cmd);
 }
 
 void M_BindHereticControls(void)

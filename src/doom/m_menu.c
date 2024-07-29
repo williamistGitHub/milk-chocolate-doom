@@ -1751,7 +1751,8 @@ boolean M_Responder (event_t* ev)
     // Pop-up menu?
     if (!menuactive)
     {
-	if (key == key_menu_activate)
+        // make sure to not go into it if cmd is shown
+        if (key == key_menu_activate && !cmd_on)
 	{
 	    M_StartControlPanel ();
 	    S_StartSound(NULL,sfx_swtchn);

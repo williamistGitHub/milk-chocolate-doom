@@ -14,6 +14,7 @@ add_library(doom STATIC
             d_items.c       d_items.h
             d_main.c        d_main.h
             d_net.c
+            d_console.c     d_console.h
                             doomdata.h
             doomdef.c       doomdef.h
             doomstat.c      doomstat.h

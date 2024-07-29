@@ -2060,6 +2060,11 @@ static default_t extra_defaults_list[] =
     //
 
     CONFIG_VARIABLE_KEY(key_multi_msgplayer8),
+
+    //!
+    // Key to open console.
+    //
+    CONFIG_VARIABLE_KEY(key_open_cmd),
 };
 
 static default_collection_t extra_defaults =

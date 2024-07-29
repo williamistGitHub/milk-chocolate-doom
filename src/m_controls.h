@@ -58,6 +58,8 @@ extern int key_pause;
 extern int key_multi_msg;
 extern int key_multi_msgplayer[8];
 
+extern int key_open_cmd;
+
 extern int key_weapon1;
 extern int key_weapon2;
 extern int key_weapon3;
